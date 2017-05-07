@@ -1,0 +1,4 @@
+﻿[dbo].[usp_OutputDailyAvgSpeed]("20140914");
+[dbo].[usp_OutputDailyAvgSpeed]("20140915");
+[dbo].[usp_OutputDailyAvgSpeed]("20140916");
+[dbo].[usp_OutputDailyAvgSpeed]("20140917");

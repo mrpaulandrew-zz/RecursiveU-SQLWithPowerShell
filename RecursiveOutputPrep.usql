@@ -1,0 +1,27 @@
+﻿DECLARE @InputPath string = "/Samples/Data/AmbulanceData/{filename}";
+
+@data =
+    EXTRACT 
+        [vehicle_id] int,
+        [entry_id] long,
+        [event_date] DateTime,
+        [latitude] float,
+        [longitude] float,
+        [speed] int,
+        [direction] string,
+        [trip_id] int?,
+        [filename] string
+    FROM 
+        @InputPath
+    USING 
+        Extractors.Csv();
+
+@DateList =
+    SELECT DISTINCT 
+        [event_date].ToString("yyyyMMdd") AS EventDateList
+    FROM 
+        @data;
+
+OUTPUT @DateList
+TO "/output/AmbulanceDataDateList.txt"
+USING Outputters.Csv(quoting : false, outputHeader : false);

@@ -1,0 +1,43 @@
+﻿CREATE PROCEDURE IF NOT EXISTS [dbo].[usp_OutputDailyAvgSpeed]
+    (
+    @OutputDate string
+    )
+AS
+BEGIN
+    
+    //DECLARE @OutputDate string = "20140914"; //for dev
+    DECLARE @InputPath string = "/Samples/Data/AmbulanceData/{filename}";
+    DECLARE @OutputPath string = "/output/DailyRecords/VehicleAvgSpeed_" + @OutputDate + ".csv";
+
+    @data =
+        EXTRACT 
+            [vehicle_id] int,
+            [entry_id] long,
+            [event_date] DateTime,
+            [latitude] float,
+            [longitude] float,
+            [speed] int,
+            [direction] string,
+            [trip_id] int?,
+            [filename] string
+        FROM 
+            @InputPath
+        USING 
+            Extractors.Csv();
+
+    @VAvgSpeed =
+        SELECT DISTINCT 
+            [vehicle_id],
+            AVG([speed]) AS AverageSpeed
+        FROM 
+            @data
+        WHERE
+            [event_date].ToString("yyyyMMdd") == @OutputDate
+        GROUP BY
+            [vehicle_id];
+
+    OUTPUT @VAvgSpeed
+    TO @OutputPath
+    USING Outputters.Csv(quoting : true, outputHeader : true);
+    
+END;
